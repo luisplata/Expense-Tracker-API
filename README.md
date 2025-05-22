@@ -340,3 +340,103 @@ json
 ```
 *   `404 Not Found`: If the expense does not exist or does not belong to the authenticated user.
     *   `401 Unauthorized`: If the user is not authenticated.
+
+
+
+## Postman cURL Examples
+
+Here are some cURL examples to test the API endpoints. Replace `<your_token>` with a valid JWT token obtained from your authentication process and `<base_url>` with the base URL of your API.
+
+### Categories
+
+**Create a new category:**
+```
+bash
+curl --location '<base_url>/api/categories' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>' \
+--header 'Content-Type: application/json' \
+--data '{
+    "name": "Groceries"
+}'
+```
+**Get all categories:**
+```
+bash
+curl --location '<base_url>/api/categories' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>'
+```
+**Get a specific category (replace `<category_id>` with the actual category ID):**
+```
+bash
+curl --location '<base_url>/api/categories/<category_id>' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>'
+```
+**Update a category (replace `<category_id>` with the actual category ID):**
+```
+bash
+curl --location '<base_url>/api/categories/<category_id>' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>' \
+--header 'Content-Type: application/json' \
+--request PUT \
+--data '{
+    "name": "Updated Category Name"
+}'
+```
+**Delete a category (replace `<category_id>` with the actual category ID):**
+```
+bash
+curl --location '<base_url>/api/categories/<category_id>' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>' \
+--request DELETE
+```
+### Expenses
+
+**Create a new expense:**
+```
+bash
+curl --location '<base_url>/api/expenses' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>' \
+--header 'Content-Type: application/json' \
+--data '{
+    "product": "Milk",
+    "price": 3.50,
+    "category_id": 1,
+    "timestamp": "2023-10-26 10:00:00"
+}'
+```
+**Get all expenses:**
+```
+bash
+curl --location '<base_url>/api/expenses' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>'
+```
+**Get a specific expense (replace `<expense_id>` with the actual expense ID):**
+```
+bash
+curl --location '<base_url>/api/expenses/<expense_id>' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>'
+```
+**Update an expense (replace `<expense_id>` with the actual expense ID):**
+```
+bash
+curl --location '<base_url>/api/expenses/<expense_id>' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <your_token>' \
+--header 'Content-Type: application/json' \
+--request PUT \
+--data '{
+    "product": "Organic Milk",
+    "price": 4.00,
+    "category_id": 1,
+    "timestamp": "2023-10-26 10:30:00"
+}'
+```
+**Delete an expense (replace `<expense_id>` with the actual expense ID):**
