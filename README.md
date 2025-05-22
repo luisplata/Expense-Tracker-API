@@ -1,61 +1,342 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## API Documentation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This documentation outlines the available API endpoints for managing categories and expenses.
 
-## About Laravel
+### Authentication
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+All endpoints require authentication using JWT (JSON Web Token). Include the token in the `Authorization` header as `Bearer your_token_here`.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Categories
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### Get all categories
 
-## Learning Laravel
+Retrieves all categories belonging to the authenticated user.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+*   **URL:** `/api/categories`
+*   **Method:** `GET`
+*   **Request Body:** None
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        [
+            {
+                "id": 1,
+                "user_id": 1,
+                "name": "Groceries",
+                "created_at": "2023-10-27T10:00:00.000000Z",
+                "updated_at": "2023-10-27T10:00:00.000000Z"
+            },
+            {
+                "id": 2,
+                "user_id": 1,
+                "name": "Utilities",
+                "created_at": "2023-10-27T10:00:00.000000Z",
+                "updated_at": "2023-10-27T10:00:00.000000Z"
+            }
+        ]
+        
+```
+*   `401 Unauthorized`: If the user is not authenticated.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+#### Create a new category
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Creates a new category for the authenticated user.
 
-## Laravel Sponsors
+*   **URL:** `/api/categories`
+*   **Method:** `POST`
+*   **Request Body:**
+```
+json
+    {
+        "name": "New Category Name"
+    }
+    
+```
+*   **Response:**
+    *   `201 Created`:
+```
+json
+        {
+            "name": "New Category Name",
+            "user_id": 1,
+            "updated_at": "2023-10-27T10:00:00.000000Z",
+            "created_at": "2023-10-27T10:00:00.000000Z",
+            "id": 3
+        }
+        
+```
+*   `400 Bad Request`: If validation fails (e.g., missing `name`, non-unique name).
+    *   `401 Unauthorized`: If the user is not authenticated.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### Get a specific category
 
-### Premium Partners
+Retrieves a specific category belonging to the authenticated user.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+*   **URL:** `/api/categories/{id}`
+*   **Method:** `GET`
+*   **URL Parameters:**
+    *   `id`: The ID of the category.
+*   **Request Body:** None
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        {
+            "id": 1,
+            "user_id": 1,
+            "name": "Groceries",
+            "created_at": "2023-10-27T10:00:00.000000Z",
+            "updated_at": "2023-10-27T10:00:00.000000Z"
+        }
+        
+```
+*   `404 Not Found`: If the category does not exist or does not belong to the authenticated user.
+    *   `401 Unauthorized`: If the user is not authenticated.
 
-## Contributing
+#### Update a specific category
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Updates a specific category belonging to the authenticated user.
 
-## Code of Conduct
+*   **URL:** `/api/categories/{id}`
+*   **Method:** `PUT`
+*   **URL Parameters:**
+    *   `id`: The ID of the category.
+*   **Request Body:**
+```
+json
+    {
+        "name": "Updated Category Name"
+    }
+    
+```
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        {
+            "id": 1,
+            "user_id": 1,
+            "name": "Updated Category Name",
+            "created_at": "2023-10-27T10:00:00.000000Z",
+            "updated_at": "2023-10-27T10:00:00.000000Z"
+        }
+        
+```
+*   `400 Bad Request`: If validation fails (e.g., missing `name`, non-unique name).
+    *   `404 Not Found`: If the category does not exist or does not belong to the authenticated user.
+    *   `401 Unauthorized`: If the user is not authenticated.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Delete a specific category
 
-## Security Vulnerabilities
+Deletes a specific category belonging to the authenticated user.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+*   **URL:** `/api/categories/{id}`
+*   **Method:** `DELETE`
+*   **URL Parameters:**
+    *   `id`: The ID of the category.
+*   **Request Body:** None
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        {
+            "message": "Category deleted successfully."
+        }
+        
+```
+*   `400 Bad Request`: If the category has associated expenses.
+    *   `404 Not Found`: If the category does not exist or does not belong to the authenticated user.
+    *   `401 Unauthorized`: If the user is not authenticated.
 
-## License
+### Expenses
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Get all expenses
+
+Retrieves all expenses belonging to the authenticated user, with their associated category.
+
+*   **URL:** `/api/expenses`
+*   **Method:** `GET`
+*   **Request Body:** None
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        [
+            {
+                "id": 1,
+                "user_id": 1,
+                "category_id": 1,
+                "product": "Milk",
+                "price": "3.50",
+                "timestamp": "2023-10-27T10:00:00.000000Z",
+                "created_at": "2023-10-27T10:00:00.000000Z",
+                "updated_at": "2023-10-27T10:00:00.000000Z",
+                "category": {
+                    "id": 1,
+                    "user_id": 1,
+                    "name": "Groceries",
+                    "created_at": "2023-10-27T10:00:00.000000Z",
+                    "updated_at": "2023-10-27T10:00:00.000000Z"
+                }
+            },
+            {
+                "id": 2,
+                "user_id": 1,
+                "category_id": null,
+                "product": "Electricity Bill",
+                "price": "75.00",
+                "timestamp": "2023-10-27T10:00:00.000000Z",
+                "created_at": "2023-10-27T10:00:00.000000Z",
+                "updated_at": "2023-10-27T10:00:00.000000Z",
+                "category": null
+            }
+        ]
+        
+```
+*   `401 Unauthorized`: If the user is not authenticated.
+
+#### Create a new expense
+
+Creates a new expense for the authenticated user.
+
+*   **URL:** `/api/expenses`
+*   **Method:** `POST`
+*   **Request Body:**
+```
+json
+    {
+        "product": "New Product",
+        "price": 10.99,
+        "category_id": 1, // Optional, can be null
+        "timestamp": "2023-10-27 12:00:00"
+    }
+    
+```
+*   **Response:**
+    *   `201 Created`:
+```
+json
+        {
+            "product": "New Product",
+            "price": "10.99",
+            "category_id": 1,
+            "timestamp": "2023-10-27T12:00:00.000000Z",
+            "user_id": 1,
+            "updated_at": "2023-10-27T10:00:00.000000Z",
+            "created_at": "2023-10-27T10:00:00.000000Z",
+            "id": 3,
+             "category": {
+                "id": 1,
+                "user_id": 1,
+                "name": "Groceries",
+                "created_at": "2023-10-27T10:00:00.000000Z",
+                "updated_at": "2023-10-27T10:00:00.000000Z"
+            }
+        }
+        
+```
+*   `400 Bad Request`: If validation fails (e.g., missing required fields, invalid data types).
+    *   `401 Unauthorized`: If the user is not authenticated.
+
+#### Get a specific expense
+
+Retrieves a specific expense belonging to the authenticated user, with its associated category.
+
+*   **URL:** `/api/expenses/{id}`
+*   **Method:** `GET`
+*   **URL Parameters:**
+    *   `id`: The ID of the expense.
+*   **Request Body:** None
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        {
+            "id": 1,
+            "user_id": 1,
+            "category_id": 1,
+            "product": "Milk",
+            "price": "3.50",
+            "timestamp": "2023-10-27T10:00:00.000000Z",
+            "created_at": "2023-10-27T10:00:00.000000Z",
+            "updated_at": "2023-10-27T10:00:00.000000Z",
+            "category": {
+                "id": 1,
+                "user_id": 1,
+                "name": "Groceries",
+                "created_at": "2023-10-27T10:00:00.000000Z",
+                "updated_at": "2023-10-27T10:00:00.000000Z"
+            }
+        }
+        
+```
+*   `404 Not Found`: If the expense does not exist or does not belong to the authenticated user.
+    *   `401 Unauthorized`: If the user is not authenticated.
+
+#### Update a specific expense
+
+Updates a specific expense belonging to the authenticated user.
+
+*   **URL:** `/api/expenses/{id}`
+*   **Method:** `PUT`
+*   **URL Parameters:**
+    *   `id`: The ID of the expense.
+*   **Request Body:**
+```
+json
+    {
+        "product": "Updated Product",
+        "price": 99.99,
+        "category_id": 2, // Can update or set to null
+        "timestamp": "2023-10-28 09:00:00"
+    }
+    
+```
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        {
+            "id": 1,
+            "user_id": 1,
+            "category_id": 2,
+            "product": "Updated Product",
+            "price": "99.99",
+            "timestamp": "2023-10-28T09:00:00.000000Z",
+            "created_at": "2023-10-27T10:00:00.000000Z",
+            "updated_at": "2023-10-27T10:00:00.000000Z",
+             "category": {
+                "id": 2,
+                "user_id": 1,
+                "name": "Utilities",
+                "created_at": "2023-10-27T10:00:00.000000Z",
+                "updated_at": "2023-10-27T10:00:00.000000Z"
+            }
+        }
+        
+```
+*   `400 Bad Request`: If validation fails (e.g., missing required fields, invalid data types).
+    *   `404 Not Found`: If the expense does not exist or does not belong to the authenticated user.
+    *   `401 Unauthorized`: If the user is not authenticated.
+
+#### Delete a specific expense
+
+Deletes a specific expense belonging to the authenticated user.
+
+*   **URL:** `/api/expenses/{id}`
+*   **Method:** `DELETE`
+*   **URL Parameters:**
+    *   `id`: The ID of the expense.
+*   **Request Body:** None
+*   **Response:**
+    *   `200 OK`:
+```
+json
+        {
+            "message": "Expense deleted successfully"
+        }
+        
+```
+*   `404 Not Found`: If the expense does not exist or does not belong to the authenticated user.
+    *   `401 Unauthorized`: If the user is not authenticated.
