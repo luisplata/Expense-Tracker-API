@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamp('timestamp');
+            $table->string('local_id')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
