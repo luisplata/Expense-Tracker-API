@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Expense;
 use App\Models\Category;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Expense;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ExpenseController extends Controller
 {
@@ -102,8 +102,8 @@ class ExpenseController extends Controller
 
         foreach ($validator->validated() as $expenseData) {
             $category = Category::firstOrCreate(
-                ['name' => strtolower($expenseData['category'])], // Case-insensitive lookup
-                ['name' => $expenseData['category']] // Create with original case
+                ['name' => strtolower($expenseData['category'])],  // Case-insensitive lookup
+                ['name' => $expenseData['category'], 'user_id' => Auth::id()]  // Create with original case and user_id
             );
 
             Auth::user()->expenses()->create([
