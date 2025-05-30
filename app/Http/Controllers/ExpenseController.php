@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Expense;
+use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -85,5 +86,33 @@ class ExpenseController extends Controller
         }
         $expense->delete();
         return response()->json(['message' => 'Expense deleted successfully']);
+    }
+
+    public function bulkStore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            '*.product' => 'required|string',
+            '*.price' => 'required|numeric',
+            '*.category' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        foreach ($validator->validated() as $expenseData) {
+            $category = Category::firstOrCreate(
+                ['name' => strtolower($expenseData['category'])], // Case-insensitive lookup
+                ['name' => $expenseData['category']] // Create with original case
+            );
+
+            Auth::user()->expenses()->create([
+                'product' => $expenseData['product'],
+                'price' => $expenseData['price'],
+                'category_id' => $category->id,
+            ]);
+        }
+
+        return response()->json(['message' => 'Expenses processed successfully'], 201);
     }
 }
