@@ -4,6 +4,30 @@ This documentation outlines the available API endpoints for managing categories 
 
 ### Authentication
 
+#### User Registration
+
+Registers a new user.
+
+*   **URL:** `/auth/register`
+*   **Method:** `POST`
+*   **Request Body:**
+    *   `name` (string, required): The user's name.
+    *   `email` (string, required): The user's email address (must be unique).
+    *   `password` (string, required): The user's password (minimum 6 characters).
+-   **Response:**
+    *   `201 Created`:
+
+
+#### User Login
+
+Logs in an existing user and returns a JWT token.
+
+*   **URL:** `/auth/login`
+*   **Method:** `POST`
+*   `email` (string, required): User's email address.
+*   `password` (string, required): User's password.
+
+
 All endpoints require authentication using JWT (JSON Web Token). Include the token in the `Authorization` header as `Bearer your_token_here`.
 
 ### Categories
@@ -344,6 +368,14 @@ json
 
 
 ## Postman cURL Examples
+
+Here are some cURL examples to test the API endpoints. Replace `<your_token>` with a valid JWT token obtained from your authentication process and `<base_url>` with the base URL of your API.
+
+### Auth
+
+**User Login:**
+
+
 
 Here are some cURL examples to test the API endpoints. Replace `<your_token>` with a valid JWT token obtained from your authentication process and `<base_url>` with the base URL of your API.
 

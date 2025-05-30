@@ -1,4 +1,3 @@
-php
 <?php
 
 use Illuminate\Http\Request;
@@ -20,9 +19,11 @@ Route::middleware(['auth:api'])->group(function () {
 Route::group([
     'prefix' => 'auth'
 ], function () {
+    // These routes do not require authentication
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
 
+    // These routes require authentication
     Route::middleware(['auth:api'])->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
