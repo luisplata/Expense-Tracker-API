@@ -109,21 +109,37 @@ class SyncController extends Controller
             // Handle Updated Expenses
             if (isset($data['updated'])) {
                 foreach ($data['updated'] as $updatedExpenseData) {
-                    $expense = Expense::where('id', $updatedExpenseData['id'])->where('user_id', $userId)->first();
-                    // Basic conflict resolution: Server wins
-                    if ($expense && Carbon::parse($updatedExpenseData['timestamp'])->greaterThanOrEqualTo($expense->updated_at)) {
-                        $category = Category::firstOrCreate(['name' => strtolower($updatedExpenseData['category']), 'user_id' => $userId], ['name' => $updatedExpenseData['category'], 'user_id' => $userId]);
-                        $expense->update([
-                            'category_id' => $category->id,
-                            'product' => $updatedExpenseData['productName'],
-                            'price' => $updatedExpenseData['price'],
-                            'timestamp' => $updatedExpenseData['timestamp'], // This might overwrite server timestamp, refine later for merge logic
-                        ]);
-                        $updatedResults[] = ['id' => $updatedExpenseData['id'], 'status' => 'success'];
-                    } elseif ($expense) {
-                         $updatedResults[] = ['id' => $updatedExpenseData['id'], 'status' => 'conflict', 'message' => 'Server version is more recent'];
+                    $expenseId = $updatedExpenseData['id'];
+                    $expense = Expense::where('id', $expenseId)->where('user_id', $userId)->first();
+
+                    if ($expense) {
+                        // Check for duplicates (same user, product name case-insensitive, timestamp) excluding the current expense
+                        $duplicate = Expense::where('user_id', $userId)
+                            ->whereRaw('LOWER(product) = ?', [strtolower($updatedExpenseData['productName'])])
+                            ->where('timestamp', $updatedExpenseData['timestamp'])
+                            ->where('id', '!=', $expenseId)
+                            ->first();
+
+                        if ($duplicate) {
+                            $errors[] = ['type' => 'duplicate_update', 'id' => $expenseId, 'message' => 'Duplicate expense found', 'conflicting_id' => $duplicate->id];
+                            $updatedResults[] = ['id' => $expenseId, 'status' => 'skipped', 'message' => 'Duplicate found'];
+                        } else {
+                            // Basic conflict resolution: Server wins
+                            if (Carbon::parse($updatedExpenseData['timestamp'])->greaterThanOrEqualTo($expense->updated_at)) {
+                                $category = Category::firstOrCreate(['name' => strtolower($updatedExpenseData['category']), 'user_id' => $userId], ['name' => $updatedExpenseData['category'], 'user_id' => $userId]);
+                                $expense->update([
+                                    'category_id' => $category->id,
+                                    'product' => $updatedExpenseData['productName'],
+                                    'price' => $updatedExpenseData['price'],
+                                    'timestamp' => $updatedExpenseData['timestamp'], // This might overwrite server timestamp, refine later for merge logic
+                                ]);
+                                $updatedResults[] = ['id' => $expenseId, 'status' => 'success'];
+                            } else {
+                                $updatedResults[] = ['id' => $expenseId, 'status' => 'conflict', 'message' => 'Server version is more recent'];
+                            }
+                        }
                     } else {
-                        $updatedResults[] = ['id' => $updatedExpenseData['id'], 'status' => 'not_found', 'message' => 'Expense not found'];
+                        $updatedResults[] = ['id' => $expenseId, 'status' => 'not_found', 'message' => 'Expense not found'];
                     }
                 }
             }
