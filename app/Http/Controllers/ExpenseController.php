@@ -53,26 +53,19 @@ class ExpenseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Expense $expense)
     {
-        $expense = Auth::user()->expenses()->find($id);
-        if (!$expense) {
-            return response()->json(['message' => 'Expense not found or unauthorized'], 404);
+        if ($expense->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
-
         $validator = Validator::make($request->all(), [
             'product' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'nullable|exists:categories,id',
             'timestamp' => 'required|date',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
         $expense->update($validator->validated());
-        return response()->json($expense->load('category'));
+        return response()->json($expense->load('category'), 200);
     }
 
     /**
@@ -80,14 +73,14 @@ class ExpenseController extends Controller
      */
     public function destroy(string $id)
     {
-        $expense = Auth::user()->expenses()->find($id);
+        $expense = Expense::find($id);
         if (!$expense) {
-            return response()->json(['message' => 'Expense not found or unauthorized'], 404);
+            return response()->json(['message' => 'Expense not found'], 404);
         }
-        $expense->delete();
+        $expense->delete(); // Soft delete the expense
         return response()->json(['message' => 'Expense deleted successfully']);
     }
-
+    
     public function bulkStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
