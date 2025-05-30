@@ -13,7 +13,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('expenses', ExpenseController::class);
     Route::post('/expenses/bulk', [ExpenseController::class, 'bulkStore']);
-    Route::apiResource('categories', CategoryController::class)->only(['index', 'destroy']);
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 });
 
 

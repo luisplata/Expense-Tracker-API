@@ -72,17 +72,16 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        $category = Auth::user()->categories()->find($id);
-
-        if (!$category) {
-            return Response::json(['message' => 'Category not found.'], 404);
+        // Ensure the category belongs to the authenticated user (implicit with route model binding
+        // and a policy or a check in the Category model relationship if set up this way).
+        // If not using a policy, you would add:
+        if ($category->user_id !== Auth::id()) {
+            return Response::json(['message' => 'Unauthorized.'], 403);
         }
 
-        if ($category->expenses()->count() > 0) {
-            return Response::json(['message' => 'Category has associated expenses and cannot be deleted.'], 400);
-        }
+        $category->expenses()->delete(); // Delete associated expenses
 
         $category->delete();
         return Response::json(['message' => 'Category deleted successfully.'], 200);
