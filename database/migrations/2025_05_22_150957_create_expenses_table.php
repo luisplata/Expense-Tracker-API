@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->string('product');
-            $table->decimal('price');
+            $table->decimal('price', 10, 2);
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamp('timestamp');
